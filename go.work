@@ -1,8 +1,8 @@
 go 1.21
 
 use (
-	env
-	log
-	tracer
-	utils
+	./env
+	./log
+	./tracer
+	./utils
 )

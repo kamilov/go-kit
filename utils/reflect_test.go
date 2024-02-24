@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type (
@@ -97,7 +98,7 @@ func TestSetValue(t *testing.T) {
 		{"Test Bool Error", reflect.ValueOf(&cfg.bool1), "tRuE", true, true, true},
 		{"Test Slice Bytes", reflect.ValueOf(&cfg.slice1), "abc", []byte("abc"), true, false},
 		{"Test Slice Int", reflect.ValueOf(&cfg.slice2), "[1, 2]", []int{1, 2}, true, false},
-		{"Test Slice String", reflect.ValueOf(&cfg.slice3), "[\"a\", \"b\", \"c\"]", []string{"a", "b", "c"}, true, false},
+		{"Test Slice DSN", reflect.ValueOf(&cfg.slice3), "[\"a\", \"b\", \"c\"]", []string{"a", "b", "c"}, true, false},
 		{"Test Map", reflect.ValueOf(&cfg.map1), "{\"a\": 1, \"b\": 2, \"c\": 3}", map[string]int{"a": 1, "b": 2, "c": 3}, true, false},
 		{"Test Map Error", reflect.ValueOf(&cfg.map1), "\"a\": 1, \"b\": 2, \"c\": 3", map[string]int{"a": 1, "b": 2, "c": 3}, true, true},
 		{"Test TestInt", reflect.ValueOf(&cfg.testInt), "1", testInt(1), true, false},

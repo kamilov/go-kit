@@ -1,3 +1,4 @@
+// Package tracer add queries to opentracing hook
 package tracer
 
 import (
@@ -6,21 +7,24 @@ import (
 	"errors"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/kamilov/go-kit/tracer"
+	kitTracer "github.com/kamilov/go-kit/tracer"
 	"github.com/loghole/dbhook"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
+// Hook tracing hook
 type Hook struct {
-	tracer tracer.Tracer
+	tracer kitTracer.Tracer
 }
 
-func New(tracer tracer.Tracer) *Hook {
+// New tracing hook constructor
+func New(tracer kitTracer.Tracer) *Hook {
 	return &Hook{tracer}
 }
 
+// Before callback
 func (h *Hook) Before(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
 	parent := trace.SpanFromContext(ctx)
 	if parent == nil {
@@ -36,13 +40,16 @@ func (h *Hook) Before(ctx context.Context, input *dbhook.HookInput) (context.Con
 	return trace.ContextWithSpan(ctx, span), nil
 }
 
-func (h *Hook) After(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+// After callback
+func (h *Hook) After(ctx context.Context, _ *dbhook.HookInput) (context.Context, error) {
 	if span := trace.SpanFromContext(ctx); span != nil {
 		defer span.End()
 	}
+
 	return ctx, nil
 }
 
+// Error callback
 func (h *Hook) Error(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
 	if span := trace.SpanFromContext(ctx); span != nil {
 		defer span.End()
@@ -58,5 +65,6 @@ func (h *Hook) Error(ctx context.Context, input *dbhook.HookInput) (context.Cont
 		span.RecordError(input.Error)
 		span.SetStatus(codes.Error, "error")
 	}
+
 	return ctx, input.Error
 }

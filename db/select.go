@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -14,14 +15,19 @@ import (
 const tagName = "db"
 
 var (
-	ErrPointer     = errors.New("must be a pointer")
+	// ErrPointer error
+	ErrPointer = errors.New("must be a pointer")
+	// ErrPointerType error
 	ErrPointerType = errors.New("a pointer was not expected")
 	fieldRegex     = regexp.MustCompile(`([^A-Z_])([A-Z])`)
 )
 
+// Select data and parse to struct
+//
+//nolint:cyclop // normal cyclomatic
 func (db *DB) Select(ctx context.Context, data any, query string, args ...any) error {
 	if ctx.Err() != nil {
-		return ctx.Err()
+		return ctx.Err() //nolint:wrapcheck // return context error
 	}
 
 	rv := reflect.ValueOf(data)
@@ -32,12 +38,17 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 
 	rv = utils.Indirect(rv.Elem())
 
+	//nolint:exhaustive // process only struct and slice
 	switch rv.Kind() {
 	case reflect.Slice:
 		rows, err := db.QueryContext(ctx, query, args...)
 		if err != nil {
-			return err
+			return fmt.Errorf("query error: %w", err)
 		}
+
+		defer func() {
+			_ = rows.Close()
+		}()
 
 		for rows.Next() {
 			val := reflect.New(rv.Type().Elem())
@@ -54,10 +65,15 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 	case reflect.Struct:
 		rows, _ := db.QueryContext(ctx, query, args...)
 
+		defer func() {
+			_ = rows.Close()
+		}()
+
 		if !rows.Next() {
 			if err := rows.Err(); err != nil {
-				return err
+				return fmt.Errorf("parse row error: %w", err)
 			}
+
 			return sql.ErrNoRows
 		}
 
@@ -97,7 +113,7 @@ func scanStruct(rows *sql.Rows, rv reflect.Value) {
 		if fi, ok := fieldNameIndex[column]; ok {
 			fields[i] = rv.Field(fi).Addr().Interface()
 		} else {
-			fields[i] = &sql.NullString{}
+			fields[i] = &sql.NullString{} //nolint:exhaustruct // not use fields
 		}
 	}
 

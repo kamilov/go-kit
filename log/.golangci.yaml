@@ -35,7 +35,7 @@ linters-settings:
       - diagnostic
       - opinionated
   gci:
-    local-prefixes: github.com/kamilov/goose
+    local-prefixes: github.com/kamilov/go-kit
 
 issues:
   exclude-use-default: false

@@ -1,30 +1,35 @@
 package db
 
 import (
+	"bytes"
 	"net/url"
 	"sort"
-
-	"go.uber.org/zap/buffer"
 )
 
-type DriverName string
+type driverName string
 
 const (
-	PGX        DriverName = "pgx"
-	Postgres   DriverName = "postgres"
-	Clickhouse DriverName = "clickhouse"
-	SQLite     DriverName = "sqlite3"
+	// PGX driver name for working with postgres
+	PGX driverName = "pgx"
+	// Postgres driver name for working with postgres
+	Postgres driverName = "postgres"
+	// Clickhouse driver name for working with clickhouse
+	Clickhouse driverName = "clickhouse"
+	// SQLite driver name for working with sqlite
+	SQLite driverName = "sqlite3"
 )
 
+// Config database configuration
 type Config struct {
 	Hostname string
 	Username string
 	Password string
 	Database string
-	Driver   DriverName
+	Driver   driverName
 	Params   map[string]string
 }
 
+// DSN return connection string
 func (c *Config) DSN() string {
 	switch c.Driver {
 	case PGX, Postgres:
@@ -38,7 +43,7 @@ func (c *Config) DSN() string {
 	}
 }
 
-func (c *Config) DriverName() string {
+func (c *Config) driverName() string {
 	return string(c.Driver)
 }
 
@@ -83,11 +88,12 @@ func (c *Config) sqliteConnectionString() string {
 	if len(c.Params) == 0 {
 		return c.Database
 	}
+
 	return c.Database + "?" + encodeParams(c.Params)
 }
 
 func encodeParams(params map[string]string) string {
-	if params == nil || len(params) == 0 {
+	if len(params) == 0 {
 		return ""
 	}
 
@@ -99,7 +105,7 @@ func encodeParams(params map[string]string) string {
 
 	sort.Strings(keys)
 
-	var buf buffer.Buffer
+	var buf bytes.Buffer
 
 	for _, key := range keys {
 		value := params[key]
@@ -108,9 +114,9 @@ func encodeParams(params map[string]string) string {
 			_ = buf.WriteByte('&')
 		}
 
-		buf.WriteString(key)
+		_, _ = buf.WriteString(key)
 		_ = buf.WriteByte('=')
-		buf.WriteString(value)
+		_, _ = buf.WriteString(value)
 	}
 
 	return buf.String()

@@ -3,6 +3,7 @@ go 1.22
 use (
 	./coder
 	./db
+	./endpoint
 	./env
 	./log
 	./tracer

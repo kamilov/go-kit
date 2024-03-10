@@ -1,0 +1,65 @@
+# More info on config here: https://golangci-lint.run/usage/configuration/#config-file
+run:
+  concurency: 4
+  deadline: 2m
+  issues-exit-code: 1
+  skip-files:
+    - ".+_test.go"
+    - "vendor/*"
+
+linters:
+  enable-all: true
+  disable:
+    - deadcode
+    - exhaustivestruct
+    - forcetypeassert
+    - gochecknoglobals
+    - gochecknoinits
+    - godot
+    - golint
+    - funlen
+    - ifshort
+    - interfacer
+    - ireturn
+    - maligned
+    - nosnakecase
+    - scopelint
+    - structcheck
+    - varcheck
+    - varnamelen
+    - wrapcheck
+  fast: false
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - style
+      - experimental
+      - performance
+      - diagnostic
+      - opinionated
+  gci:
+    local-prefixes: github.com/kamilov/go-kit
+  depguard:
+    rules:
+      main:
+        allow:
+          - $gostd
+          - github.com/kamilov/go-kit
+          - github.com/google/go-cmp
+  gofmt:
+    rewrite-rules:
+      - pattern: interface{}
+        replacement: any
+  gofumpt:
+    extra-rules: true
+  govet:
+    enable-all: true
+  nolintlint:
+    require-specific: true
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 100
+  max-same-issues: 4
+  new: false

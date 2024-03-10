@@ -1,6 +1,7 @@
 go 1.22
 
 use (
+	./coder
 	./db
 	./env
 	./log

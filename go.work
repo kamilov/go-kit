@@ -1,0 +1,9 @@
+go 1.22
+
+use (
+	coder
+	config
+	db
+	endpoint
+	utils
+)

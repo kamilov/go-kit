@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/kamilov/go-kit/config"
-	kitReflection "github.com/kamilov/go-kit/utils/reflect"
+	"github.com/kamilov/go-kit/utils/structure"
 )
 
 type (
@@ -34,7 +34,7 @@ func init() {
 }
 
 func reader(ctx context.Context, data any) error {
-	if err := kitReflection.ValidateStructPointer(data); err != nil {
+	if err := structure.ValidateStructPointer(data); err != nil {
 		return err
 	}
 

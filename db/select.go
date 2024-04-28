@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	kitReflect "github.com/kamilov/go-kit/utils/reflect"
+	"github.com/kamilov/go-kit/utils/structure"
 )
 
 const tagName = "db"
@@ -23,7 +23,7 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 		return ctx.Err()
 	}
 
-	if err := kitReflect.ValidatePointer(data); err != nil {
+	if err := structure.ValidatePointer(data); err != nil {
 		return err
 	}
 

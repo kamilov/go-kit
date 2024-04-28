@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/kamilov/go-kit/coder"
-	"github.com/kamilov/go-kit/utils/reflect"
+	"github.com/kamilov/go-kit/utils/structure"
 )
 
 type (
@@ -46,7 +46,7 @@ func Read(ctx context.Context, data any) error {
 }
 
 func ReadFile(ctx context.Context, path string, data any) error {
-	if err := reflect.ValidateStructPointer(data); err != nil {
+	if err := structure.ValidateStructPointer(data); err != nil {
 		return err
 	}
 

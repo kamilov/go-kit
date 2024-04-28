@@ -36,6 +36,7 @@ func WithConfigDSN(dsn string) Option {
 		Hostname: u.Host,
 		Username: u.User.Username(),
 		Database: u.Path,
+		Params:   make(map[string]string),
 	}
 
 	switch u.Scheme {

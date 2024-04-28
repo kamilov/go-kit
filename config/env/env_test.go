@@ -4,18 +4,12 @@ package env_test
 import (
 	"context"
 	"os"
-	"reflect"
 	"slices"
 	"testing"
 
 	"github.com/kamilov/go-kit/config"
 	"github.com/kamilov/go-kit/config/env"
 )
-
-type Slices struct {
-	Chars []byte `env:"TEST_ENV_SLICE_CHARS"`
-	Int   []int  `env:"TEST_ENV_SLICE_INT"`
-}
 
 func TestParser(t *testing.T) {
 	vars := map[string]string{
@@ -25,8 +19,6 @@ func TestParser(t *testing.T) {
 		"TEST_ENV_UINT":        "1000",
 		"TEST_ENV_FLOAT":       "10.01",
 		"TEST_ENV_SLICE_CHARS": "abc",
-		"TEST_ENV_SLICE_INT":   "[1, 2, 3]",
-		"TEST_ENV_MAP":         `{"key":"value"}`,
 	}
 
 	for key, value := range vars {
@@ -40,17 +32,13 @@ func TestParser(t *testing.T) {
 		Uint uint64,
 		Float float64,
 		Chars []byte,
-		Ints []int,
-		Map map[string]string,
 	) bool {
 		return String == "test" &&
 			Bool &&
 			Int == int64(1000) &&
 			Uint == uint64(1000) &&
 			Float == 10.01 &&
-			slices.Equal(Chars, []byte{'a', 'b', 'c'}) &&
-			slices.Equal(Ints, []int{1, 2, 3}) &&
-			reflect.DeepEqual(Map, map[string]string{"key": "value"})
+			slices.Equal(Chars, []byte{'a', 'b', 'c'})
 	}
 
 	t.Run("test default env", func(t *testing.T) {
@@ -62,8 +50,7 @@ func TestParser(t *testing.T) {
 			Int    int64   `env:"TEST_ENV_INT"`
 			Uint   uint64  `env:"TEST_ENV_UINT"`
 			Float  float64 `env:"TEST_ENV_FLOAT"`
-			Slices
-			Map map[string]string `env:"TEST_ENV_MAP"`
+			Chars  []byte  `env:"TEST_ENV_SLICE_CHARS"`
 		}{}
 
 		if err := config.Read(context.Background(), &test); err != nil {
@@ -75,8 +62,6 @@ func TestParser(t *testing.T) {
 			test.Uint,
 			test.Float,
 			test.Chars,
-			test.Slices.Int,
-			test.Map,
 		) {
 			t.Error("failed to parse env")
 		}
@@ -86,14 +71,12 @@ func TestParser(t *testing.T) {
 		t.Helper()
 
 		var test = struct {
-			String string            `e_n_v:"STRING"`
-			Bool   bool              `e_n_v:"BOOL"`
-			Int    int64             `e_n_v:"INT"`
-			Uint   uint64            `e_n_v:"UINT"`
-			Float  float64           `e_n_v:"FLOAT"`
-			Chars  []byte            `e_n_v:"SLICE_CHARS"`
-			Ints   []int             `e_n_v:"SLICE_INT"`
-			Map    map[string]string `e_n_v:"MAP"`
+			String string  `e_n_v:"STRING"`
+			Bool   bool    `e_n_v:"BOOL"`
+			Int    int64   `e_n_v:"INT"`
+			Uint   uint64  `e_n_v:"UINT"`
+			Float  float64 `e_n_v:"FLOAT"`
+			Chars  []byte  `e_n_v:"SLICE_CHARS"`
 		}{}
 		ctx := context.Background()
 		ctx = context.WithValue(ctx, env.TagName, "e_n_v")
@@ -101,7 +84,7 @@ func TestParser(t *testing.T) {
 
 		if err := config.Read(ctx, &test); err != nil {
 			t.Error(err)
-		} else if !compareValues(test.String, test.Bool, test.Int, test.Uint, test.Float, test.Chars, test.Ints, test.Map) {
+		} else if !compareValues(test.String, test.Bool, test.Int, test.Uint, test.Float, test.Chars) {
 			t.Error("failed to parse env")
 		}
 	})

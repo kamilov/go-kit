@@ -63,6 +63,7 @@ func handler[Input, Output any](server *Server, controller endpoint.Endpoint[Inp
 		if err == nil && isNil(response) {
 			response = nil
 			w.Header().Set("Content-Length", "0")
+			w.WriteHeader(http.StatusNoContent)
 		}
 
 		if err = enc(ctx, w, response); err != nil {

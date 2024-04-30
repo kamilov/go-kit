@@ -1,4 +1,4 @@
-package http
+package content
 
 import (
 	"net/http"
@@ -14,25 +14,23 @@ type AcceptRange struct {
 	raw        string
 }
 
-const defaultContentType = "text/plain"
-
-func NegotiateContentType(r *http.Request, offers ...string) string {
+func NegotiateContentType(r *http.Request, offers ...ContentType) string {
 	if len(offers) == 0 {
-		offers = append(offers, defaultContentType)
+		offers = append(offers, ContentTypeText)
 	}
 
 	accepts := AcceptMediaTypes(r)
 	offerRanges := make([]AcceptRange, 0, len(offers))
 
 	for _, offer := range offers {
-		offerRanges = append(offerRanges, ParseAcceptRange(offer))
+		offerRanges = append(offerRanges, ParseAcceptRange(string(offer)))
 	}
 
 	return negotiateContentType(accepts, offerRanges)
 }
 
 func AcceptMediaTypes(r *http.Request) []AcceptRange {
-	result := []AcceptRange{}
+	var result []AcceptRange
 
 	for _, value := range r.Header["Accept"] {
 		result = append(result, ParseAcceptRanges(value)...)
@@ -42,7 +40,7 @@ func AcceptMediaTypes(r *http.Request) []AcceptRange {
 }
 
 func ParseAcceptRanges(accepts string) []AcceptRange {
-	result := []AcceptRange{}
+	var result []AcceptRange
 	remaining := accepts
 
 	for {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"time"
+
+	"github.com/kamilov/go-kit/transport/http/content"
 )
 
 type Server struct {
@@ -12,6 +14,8 @@ type Server struct {
 
 	basePath    string
 	middlewares []Middleware
+
+	negotiateTypes []content.ContentType
 }
 
 const (
@@ -38,6 +42,12 @@ func New(opts ...Option) *Server {
 	for _, opt := range opts {
 		opt.apply(s)
 	}
+
+	return s
+}
+
+func (s *Server) Negotiate(types ...content.ContentType) *Server {
+	s.negotiateTypes = types
 
 	return s
 }

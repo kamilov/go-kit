@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/kamilov/go-kit/transport/http/content"
 )
 
 type (
@@ -27,6 +29,12 @@ func WithPort(port int) Option {
 func WithBasePath(path string) Option {
 	return optionFunc(func(server *Server) {
 		server.basePath = strings.TrimRight(path, "/") + "/"
+	})
+}
+
+func WithNegotiateTypes(types ...content.ContentType) Option {
+	return optionFunc(func(server *Server) {
+		server.negotiateTypes = types
 	})
 }
 

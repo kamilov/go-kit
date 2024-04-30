@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/kamilov/go-kit/coder"
@@ -15,7 +16,15 @@ type (
 	Headerer interface {
 		Header() http.Header
 	}
+
+	emptyBody struct{}
 )
+
+func EmptyBodyAdapter[Output any](fn func(ctx context.Context) (Output, error)) endpoint.Endpoint[emptyBody, Output] {
+	return func(ctx context.Context, _ emptyBody) (Output, error) {
+		return fn(ctx)
+	}
+}
 
 func handler[Input, Output any](_ *Server, controller endpoint.Endpoint[Input, Output]) http.HandlerFunc {
 	decode := newRequestDecoder[Input]()

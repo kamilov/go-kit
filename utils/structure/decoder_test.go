@@ -30,7 +30,7 @@ func TestDecoder(t *testing.T) {
 	type test struct {
 		UnmarshalText        unmarshalText  `field:"string"`
 		UnmarshalTextPointer *unmarshalText `field:"string"`
-		unexported           string         `field:"string"`
+		unexported           string         `field:"string"` //nolint:unused // for only test
 		String               string         `field:"string"`
 		StringPointer        *string        `field:"string"`
 		Int                  int            `field:"number"`
@@ -86,7 +86,7 @@ func TestDecoder(t *testing.T) {
 		},
 	}
 
-	exportAll := cmp.Exporter(func(rt reflect.Type) bool { return true })
+	exportAll := cmp.Exporter(func(_ reflect.Type) bool { return true })
 
 	t.Run("Decoder", func(t *testing.T) {
 		t.Helper()

@@ -22,6 +22,7 @@ const (
 )
 
 var (
+	//nolint:gochecknoglobals // used for data type caching
 	textUnmarshalerType = reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()
 )
 
@@ -151,6 +152,7 @@ func decodeBytes(set setFunc[[]byte], key string) decoder {
 	}
 }
 
+//nolint:funlen,gocognit
 func compileDecoders(srt reflect.Type, tagName string, isPointer bool) (decoder, error) {
 	var decoders []decoder
 
@@ -172,6 +174,7 @@ func compileDecoders(srt reflect.Type, tagName string, isPointer bool) (decoder,
 			continue
 		}
 
+		//nolint:exhaustive // we process only certain types
 		switch fieldKind {
 		case reflect.Struct:
 			dec, err := compileDecoders(fieldType, tagName, fieldIsPointer)

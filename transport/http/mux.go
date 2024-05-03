@@ -67,7 +67,6 @@ func register[Input, Output any](
 	middlewares ...endpoint.Middleware[Input, Output],
 ) {
 	pattern := method + " " + server.basePath + strings.TrimLeft(path, "/")
-	controller = withEndpointMiddlewares(controller, middlewares...)
 	muxHandler := handler(server, controller, endpoint.Chain(middlewares...))
 
 	server.mux.Handle(pattern, muxHandler)

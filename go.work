@@ -1,10 +1,10 @@
 go 1.22
 
 use (
-	coder
-	config
-	db
-	endpoint
-	transport/http
-	utils
+	./coder
+	./config
+	./db
+	./endpoint
+	./transport/http
+	./utils
 )

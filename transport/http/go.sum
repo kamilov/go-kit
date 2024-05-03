@@ -1,0 +1,4 @@
+github.com/gorilla/schema v1.3.0 h1:rbciOzXAx3IB8stEFnfTwO3sYa6EWlQk79XdyustPDA=
+github.com/gorilla/schema v1.3.0/go.mod h1:Dg5SSm5PV60mhF2NFaTV1xuYYj8tV8NOPRo4FggUMnM=
+github.com/kamilov/go-kit/endpoint v0.0.0-20240310205151-9c81c199a057 h1:sZQYJMXFdZhqdf2YHMrv34Ez3H5+gKxBgS4mpE02WbQ=
+github.com/kamilov/go-kit/endpoint v0.0.0-20240310205151-9c81c199a057/go.mod h1:FBka7YcFe2W6ZJlypOWx+jfuhvqDrF25/3Cca6wxekY=

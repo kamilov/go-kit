@@ -15,10 +15,6 @@ func Group(server *Server, path string) *Server {
 	return newServer
 }
 
-func Use(server *Server, middlewares ...Middleware) {
-	server.middlewares = append(server.middlewares, middlewares...)
-}
-
 func Get[Input, Output any](
 	server *Server,
 	path string,
@@ -72,8 +68,7 @@ func register[Input, Output any](
 ) {
 	pattern := method + " " + server.basePath + strings.TrimLeft(path, "/")
 	controller = withEndpointMiddlewares(controller, middlewares...)
-	muxHandler := handler(server, controller)
-	muxHandler = withHTTPMiddlewares(muxHandler, server.middlewares...)
+	muxHandler := handler(server, controller, endpoint.Chain(middlewares...))
 
 	server.mux.Handle(pattern, muxHandler)
 }

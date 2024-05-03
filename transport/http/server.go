@@ -35,8 +35,7 @@ func New(opts ...Option) *Server {
 		},
 		mux: http.NewServeMux(),
 
-		basePath:    defaultBasePath,
-		middlewares: make([]Middleware, 0),
+		basePath: defaultBasePath,
 	}
 
 	for _, opt := range opts {

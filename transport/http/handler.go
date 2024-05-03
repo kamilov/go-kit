@@ -18,7 +18,11 @@ type (
 	}
 )
 
-func handler[Input, Output any](server *Server, controller endpoint.Endpoint[Input, Output]) http.HandlerFunc {
+func handler[Input, Output any](
+	server *Server,
+	controller endpoint.Endpoint[Input, Output],
+	chain endpoint.Middleware[Input, Output],
+) http.HandlerFunc {
 	decode := newRequestDecoder[Input]()
 	isNil := NewNilCheck(*new(Output))
 
@@ -42,9 +46,9 @@ func handler[Input, Output any](server *Server, controller endpoint.Endpoint[Inp
 		if err != nil {
 			response = Error{err, getStatusCode(err, http.StatusBadRequest)}
 		} else {
-			response, err = controller(ctx, input)
+			response, err = chain(controller)(ctx, input)
 			if err != nil {
-				response = Error{err, 0}
+				response = err
 			}
 		}
 
@@ -52,7 +56,9 @@ func handler[Input, Output any](server *Server, controller endpoint.Endpoint[Inp
 
 		if impl, ok := response.(Headerer); ok {
 			for key, values := range impl.Header() {
-				w.Header().Set(key, values[0])
+				for _, value := range values {
+					w.Header().Add(key, value)
+				}
 			}
 		}
 

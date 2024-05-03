@@ -50,7 +50,7 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 			return sql.ErrNoRows
 		}
 
-		scanStruct(rows, rv)
+		return scanStruct(rows, rv)
 
 	case reflect.Slice:
 		rows, err := db.QueryContext(ctx, query, args...)
@@ -66,9 +66,13 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 			val := reflect.New(rv.Type().Elem())
 
 			if rv.Type().Elem().Kind() == reflect.Struct {
-				scanStruct(rows, val)
+				if err = scanStruct(rows, val); err != nil {
+					return err
+				}
 			} else {
-				_ = rows.Scan(val.Interface())
+				if err = rows.Scan(val.Interface()); err != nil {
+					return err
+				}
 			}
 
 			rv = reflect.Append(rv, val.Elem())
@@ -84,7 +88,7 @@ func (db *DB) Select(ctx context.Context, data any, query string, args ...any) e
 	return nil
 }
 
-func scanStruct(rows *sql.Rows, rv reflect.Value) {
+func scanStruct(rows *sql.Rows, rv reflect.Value) error {
 	rv = reflect.Indirect(rv)
 	fieldNameIndex := make(map[string]int)
 
@@ -117,7 +121,7 @@ func scanStruct(rows *sql.Rows, rv reflect.Value) {
 		}
 	}
 
-	_ = rows.Scan(fields...)
+	return rows.Scan(fields...)
 }
 
 func fieldMap(name string) string {

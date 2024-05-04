@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	empty    struct{}
+	Empty    struct{}
 	redirect struct {
 		code int
 		url  string
@@ -27,14 +27,14 @@ func (r redirect) Header() http.Header {
 	return h
 }
 
-func EmptyRequestAdapter[Output any](fn func(ctx context.Context) (Output, error)) endpoint.Endpoint[empty, Output] {
-	return func(ctx context.Context, _ empty) (Output, error) {
+func EmptyRequestAdapter[Output any](fn func(ctx context.Context) (Output, error)) endpoint.Endpoint[Empty, Output] {
+	return func(ctx context.Context, _ Empty) (Output, error) {
 		return fn(ctx)
 	}
 }
 
-func EmptyResponseAdapter[Input any](fn func(ctx context.Context, input Input) error) endpoint.Endpoint[Input, *empty] {
-	return func(ctx context.Context, input Input) (*empty, error) {
+func EmptyResponseAdapter[Input any](fn func(ctx context.Context, input Input) error) endpoint.Endpoint[Input, *Empty] {
+	return func(ctx context.Context, input Input) (*Empty, error) {
 		err := fn(ctx, input)
 		return nil, err
 	}
@@ -47,6 +47,6 @@ func RedirectAdapter[Input any](url string, code int, fn func(ctx context.Contex
 			return nil, err
 		}
 
-		return &redirect{code, url}, err
+		return &redirect{code, url}, nil
 	}
 }

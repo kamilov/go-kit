@@ -48,7 +48,7 @@ func handler[Input, Output any](
 		} else {
 			response, err = chain(controller)(ctx, input)
 			if err != nil {
-				response = Error{err, http.StatusInternalServerError}
+				response = Error{err, 0}
 			}
 		}
 

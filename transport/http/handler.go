@@ -44,11 +44,11 @@ func handler[Input, Output any](
 		ctx := WithContextRequest(r.Context(), r)
 		err = decode(ctx, &input, r)
 		if err != nil {
-			response = Error{err, getStatusCode(err, http.StatusBadRequest)}
+			response = Error(err, getStatusCode(err, http.StatusBadRequest))
 		} else {
 			response, err = chain(controller)(ctx, input)
 			if err != nil {
-				response = Error{err, 0}
+				response = Error(err, 0)
 			}
 		}
 

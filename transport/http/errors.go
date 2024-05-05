@@ -13,7 +13,7 @@ import (
 type (
 	StatusError int
 
-	Error struct {
+	HTTPError struct {
 		err  error
 		code int
 	}
@@ -24,6 +24,10 @@ const (
 	ErrUnsupportedMediaType = StatusError(http.StatusUnsupportedMediaType)
 )
 
+func Error(err error, code int) HTTPError {
+	return HTTPError{err, code}
+}
+
 func (e StatusError) Error() string {
 	return http.StatusText(e.StatusCode())
 }
@@ -32,15 +36,15 @@ func (e StatusError) StatusCode() int {
 	return int(e)
 }
 
-func (e Error) Error() string {
+func (e HTTPError) Error() string {
 	return e.err.Error()
 }
 
-func (e Error) Unwrap() error {
+func (e HTTPError) Unwrap() error {
 	return e.err
 }
 
-func (e Error) StatusCode() int {
+func (e HTTPError) StatusCode() int {
 	if e.code != 0 {
 		return e.code
 	}
@@ -53,11 +57,11 @@ func (e Error) StatusCode() int {
 	return http.StatusInternalServerError
 }
 
-func (e Error) Is(err error) bool {
+func (e HTTPError) Is(err error) bool {
 	return errors.Is(e.err, err) || errors.Is(StatusError(e.code), err)
 }
 
-func (e Error) MarshalText() ([]byte, error) {
+func (e HTTPError) MarshalText() ([]byte, error) {
 	var impl encoding.TextMarshaler
 	if errors.As(e.err, &impl) {
 		return impl.MarshalText()
@@ -66,7 +70,7 @@ func (e Error) MarshalText() ([]byte, error) {
 	return []byte(e.Error()), nil
 }
 
-func (e Error) MarshalJSON() ([]byte, error) {
+func (e HTTPError) MarshalJSON() ([]byte, error) {
 	var impl json.Marshaler
 	if errors.As(e.err, &impl) {
 		return impl.MarshalJSON()
@@ -81,7 +85,7 @@ func (e Error) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (e Error) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+func (e HTTPError) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
 	var impl xml.Marshaler
 	if errors.As(e.err, &impl) {
 		return impl.MarshalXML(enc, start)
